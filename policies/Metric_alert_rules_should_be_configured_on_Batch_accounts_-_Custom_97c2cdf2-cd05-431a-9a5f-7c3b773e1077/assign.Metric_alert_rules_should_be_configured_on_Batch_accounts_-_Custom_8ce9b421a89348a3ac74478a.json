@@ -1,0 +1,29 @@
+{
+ "sku": {
+  "name": "A0",
+  "tier": "Free"
+ },
+ "properties": {
+  "displayName": "Metric alert rules should be configured on Batch accounts - Custom",
+  "policyDefinitionId": "/subscriptions/cd6311f1-ef31-4963-b978-5306d2800963/providers/Microsoft.Authorization/policyDefinitions/97c2cdf2-cd05-431a-9a5f-7c3b773e1077",
+  "scope": "/subscriptions/cd6311f1-ef31-4963-b978-5306d2800963",
+  "notScopes": [],
+  "parameters": {
+   "metricName": {
+    "value": "IdleNodeCount"
+   }
+  },
+  "metadata": {
+   "assignedBy": "Jose Perez Saborio",
+   "parameterScopes": {},
+   "createdBy": "876379ba-8652-4659-acef-fa487b3bb447",
+   "createdOn": "2022-03-22T17:34:58.0412251Z",
+   "updatedBy": null,
+   "updatedOn": null
+  },
+  "enforcementMode": "Default"
+ },
+ "id": "/subscriptions/cd6311f1-ef31-4963-b978-5306d2800963/providers/Microsoft.Authorization/policyAssignments/8ce9b421a89348a3ac74478a",
+ "type": "Microsoft.Authorization/policyAssignments",
+ "name": "8ce9b421a89348a3ac74478a"
+}

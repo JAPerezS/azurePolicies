@@ -1,0 +1,68 @@
+{
+ "properties": {
+  "displayName": "Metric alert rules should be configured on Batch accounts - Custom",
+  "policyType": "Custom",
+  "mode": "Indexed",
+  "description": "Audit configuration of metric alert rules on Batch account to enable the required metric",
+  "metadata": {
+   "category": "Batch",
+   "createdBy": "876379ba-8652-4659-acef-fa487b3bb447",
+   "createdOn": "2022-03-22T17:23:26.0124606Z",
+   "updatedBy": "876379ba-8652-4659-acef-fa487b3bb447",
+   "updatedOn": "2022-03-22T17:33:21.6337209Z"
+  },
+  "parameters": {
+   "effect": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Effect",
+     "description": "Enable or disable the execution of the policy"
+    },
+    "allowedValues": [
+     "AuditIfNotExists",
+     "Disabled"
+    ],
+    "defaultValue": "AuditIfNotExists"
+   },
+   "metricName": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Metric name",
+     "description": "The metric name that an alert rule must be enabled on"
+    }
+   }
+  },
+  "policyRule": {
+   "if": {
+    "field": "type",
+    "equals": "Microsoft.Batch/batchAccounts"
+   },
+   "then": {
+    "effect": "[parameters('effect')]",
+    "details": {
+     "type": "Microsoft.Insights/metricAlerts",
+     "existenceScope": "Subscription",
+     "existenceCondition": {
+      "allOf": [
+       {
+        "field": "Microsoft.Insights/metricAlerts/enabled",
+        "equals": "true"
+       },
+       {
+        "field": "Microsoft.Insights/metricAlerts/criteria.Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria.allOf[*].metricName",
+        "equals": "[parameters('metricName')]"
+       },
+       {
+        "field": "Microsoft.Insights/metricalerts/scopes[*]",
+        "equals": "[concat('/subscriptions/', subscription().subscriptionId, '/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Batch/batchAccounts/', field('name'))]"
+       }
+      ]
+     }
+    }
+   }
+  }
+ },
+ "id": "/subscriptions/cd6311f1-ef31-4963-b978-5306d2800963/providers/Microsoft.Authorization/policyDefinitions/97c2cdf2-cd05-431a-9a5f-7c3b773e1077",
+ "type": "Microsoft.Authorization/policyDefinitions",
+ "name": "97c2cdf2-cd05-431a-9a5f-7c3b773e1077"
+}
