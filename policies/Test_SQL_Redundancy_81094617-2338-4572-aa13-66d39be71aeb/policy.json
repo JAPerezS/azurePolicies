@@ -1,0 +1,112 @@
+{
+ "properties": {
+  "displayName": "Test SQL Redundancy",
+  "policyType": "Custom",
+  "mode": "All",
+  "metadata": {
+   "createdBy": "876379ba-8652-4659-acef-fa487b3bb447",
+   "createdOn": "2022-04-29T19:03:51.0199115Z",
+   "updatedBy": "876379ba-8652-4659-acef-fa487b3bb447",
+   "updatedOn": "2022-05-04T13:14:51.4658958Z"
+  },
+  "parameters": {
+   "effect": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Effect",
+     "description": "Policy effect"
+    },
+    "allowedValues": [
+     "DeployIfNotExists",
+     "Disabled"
+    ],
+    "defaultValue": "DeployIfNotExists"
+   },
+   "backupRedundancy": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Backup Redundancy",
+     "description": "Backup storage redundancy"
+    },
+    "allowedValues": [
+     "Local",
+     "Zone",
+     "Geo"
+    ]
+   }
+  },
+  "policyRule": {
+   "if": {
+    "allOf": [
+     {
+      "field": "type",
+      "equals": "Microsoft.Sql/servers/databases"
+     },
+     {
+      "field": "name",
+      "notEquals": "master"
+     }
+    ]
+   },
+   "then": {
+    "effect": "[parameters('effect')]",
+    "details": {
+     "type": "Microsoft.Sql/servers/databases",
+     "name": "[field('fullName')]",
+     "existenceCondition": {
+      "field": "Microsoft.Sql/servers/databases/requestedBackupStorageRedundancy",
+      "equals": "[parameters('backupRedundancy')]"
+     },
+     "deployment": {
+      "properties": {
+       "mode": "Incremental",
+       "template": {
+        "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+         "serverName": {
+          "type": "String"
+         },
+         "backupRedundancy": {
+          "type": "String"
+         },
+         "location": {
+          "type": "String"
+         }
+        },
+        "resources": [
+         {
+          "name": "[parameters('serverName')]",
+          "type": "Microsoft.Sql/servers/databases",
+          "location": "[parameters('location')]",
+          "apiVersion": "2021-08-01-preview",
+          "properties": {
+           "requestedBackupStorageRedundancy": "[parameters('backupRedundancy')]"
+          }
+         }
+        ]
+       },
+       "parameters": {
+        "serverName": {
+         "value": "[field('fullName')]"
+        },
+        "backupRedundancy": {
+         "value": "[parameters('backupRedundancy')]"
+        },
+        "location": {
+         "value": "[field('location')]"
+        }
+       }
+      }
+     },
+     "roleDefinitionIds": [
+      "/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+     ]
+    }
+   }
+  }
+ },
+ "id": "/subscriptions/cd6311f1-ef31-4963-b978-5306d2800963/providers/Microsoft.Authorization/policyDefinitions/81094617-2338-4572-aa13-66d39be71aeb",
+ "type": "Microsoft.Authorization/policyDefinitions",
+ "name": "81094617-2338-4572-aa13-66d39be71aeb"
+}
