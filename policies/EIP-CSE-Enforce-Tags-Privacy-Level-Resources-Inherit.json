@@ -1,0 +1,86 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "variables": {
+    "policyName": "EIP-CSE-Enforce-Tags-Privacy-Level-Resources-Inherit",
+    "policyDisplayName": "EIP-CSE-Enforce-Tags-Privacy-Level-Resources-Inherit",
+    "policyDescription": "Ensure Tags in Resource Groups Must Inherit from Resource Groups to Child Resources",
+    "parameterline": "parameters('effect')",
+    "value": "resourceGroup().tags['privacy-level']"
+  },
+  "resources": [
+    {
+      "name": "[variables('policyName')]",
+      "type": "Microsoft.Authorization/policyDefinitions",
+      "apiVersion": "2019-09-01",
+      "properties": {
+        "policyType": "Custom",
+        "mode": "Indexed",
+        "displayName": "[variables('policyDisplayName')]",
+        "description": "[variables('policyDescription')]",
+        "metadata": {
+          "version": "1.0.0",
+          "category": "Tags"
+        },
+        "parameters": {
+          "effect": {
+            "type": "String",
+            "metadata": {
+              "displayName": "Policy Effect",
+              "description": "The desired effect of the policy."
+            },
+            "allowedValues": [
+              "Modify"
+            ],
+            "defaultValue": "Modify"
+          }
+        },
+        "policyRule": {
+          "if": {
+            "allOf": [
+              {
+                "field": "type",
+                "notEquals": "Microsoft.Resources/subscriptions/resourceGroups"
+              },
+              {
+                "field": "type",
+                "notEquals": "Microsoft.Resources/subscriptions"
+              },
+              {
+                "anyOf": [
+                  {
+                    "field": "tags['privacy-level']",
+                    "exists": false
+                  },
+                  {
+                    "field": "tags['privacy-level']",
+                    "equals": ""
+                  },
+                  {
+                    "field": "tags['privacy-level']",
+                    "notEquals": "[concat('[',variables('value'),']')]"
+                  }
+                ]
+              }
+            ]
+          },
+          "then": {
+            "effect": "[concat('[',variables('parameterline'),']')]",
+            "details": {
+              "roleDefinitionIds": [
+                "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+              ],
+              "operations": [
+                {
+                  "operation": "addOrReplace",
+                  "field": "[concat('tags[', 'privacy-level', ']')]",
+                  "value": "[concat('[',variables('value'),']')]"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
